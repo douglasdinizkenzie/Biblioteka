@@ -5,8 +5,8 @@ class Book_loans(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField()
     status = models.TextField()
-    user_id = models.ForeignKey("users.User", on_delete=models.CASCADE)
-    copie_id = models.ForeignKey("copies.Copies", on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    copie = models.ForeignKey("copies.Copies", on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"<following {self.id} = {self.user_id}]>"
