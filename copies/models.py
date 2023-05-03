@@ -14,7 +14,7 @@ class Book_loans(models.Model):
 class Copies(models.Model):
     is_avaible = models.BooleanField()
     last_loan = models.DateTimeField(auto_now_add=True)
-    book_id = models.ForeignKey("books.Book", on_delete=models.CASCADE)
+    book = models.ForeignKey("books.Book", on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"<Copie {self.id} = {self.is_avaible}]>"
