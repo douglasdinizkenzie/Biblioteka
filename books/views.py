@@ -15,6 +15,4 @@ class BookView(ListCreateAPIView):
     serializer_class = BookSerializer
 
     def perform_create(self, serializer):
-        return serializer.save(
-            collaborator = self.request.user
-        )
+        return serializer.save()
