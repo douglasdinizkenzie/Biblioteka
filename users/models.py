@@ -11,7 +11,7 @@ class User(AbstractUser):
     is_student = models.BooleanField(null=True, default=True)
     is_collaborator = models.BooleanField(null=True, default=False)
     is_blocked = models.BooleanField(default=False)
-    copies = models.ManyToManyField(
+    loans = models.ManyToManyField(
         Copies, through="copies.Book_loans", related_name="users"
     )
 
