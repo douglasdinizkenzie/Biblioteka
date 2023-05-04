@@ -13,7 +13,15 @@ class Followings(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=120)
     sinopse = models.CharField(max_length=120)
+    author = models.CharField(max_length=120)
     year = models.DateTimeField(auto_now_add=True)
+
+    collaborator = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="books"
+    )
+
     user = models.ManyToManyField(
         User, through=Followings, related_name="books"
     )
