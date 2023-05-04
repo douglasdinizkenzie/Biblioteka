@@ -70,5 +70,5 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "is_student",
             "email",
             "password",
-            "copies",
+            "loans",
         ]
