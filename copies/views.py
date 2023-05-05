@@ -2,10 +2,15 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.shortcuts import render
 from rest_framework import generics
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError 
 from books.models import Book
 from .serializers import CopiesSerializer
-from .models import Copies
+from .models import Copy
 from .permissions import IsAdm
+from users.serializers import BookLoanSerializer
+from .models import Book_loans
+from users.models import User
+from datetime import datetime
 
 # Create your views here.
 
@@ -21,7 +26,7 @@ class RetrieveUpdateDestroyCreateAPIView(
 
 class CopiesView(RetrieveUpdateDestroyCreateAPIView):
     serializer_class = CopiesSerializer
-    queryset = Copies.objects.all()
+    queryset = Copy.objects.all()
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdm]
@@ -29,3 +34,23 @@ class CopiesView(RetrieveUpdateDestroyCreateAPIView):
     def perform_create(self, serializer):
         book_id = get_object_or_404(Book, pk=self.kwargs["pk"])
         serializer.save(book=book_id)
+
+class BookLoanView(RetrieveUpdateDestroyCreateAPIView):
+    serializer_class = BookLoanSerializer
+    queryset = Book_loans
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdm]
+
+    def perform_create(self, serializer):
+        user_id = get_object_or_404(User, pk=self.kwargs["pk"])
+        copy = get_object_or_404(Copy, pk=self.request.data["copy"])
+        if copy.is_available == False:
+            data = {"message": "Copy already borrowed!"}
+            raise ValidationError(data, code=409)
+        copy.is_available = False
+        copy.last_loan = datetime.now()
+        copy.save()
+        
+        return serializer.save(user=user_id)
+

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from copies.models import Copies
+from copies.models import Copy
 
 
 class User(AbstractUser):
@@ -12,7 +12,7 @@ class User(AbstractUser):
     is_collaborator = models.BooleanField(null=True, default=False)
     is_blocked = models.BooleanField(default=False)
     loans = models.ManyToManyField(
-        Copies, through="copies.Book_loans", related_name="users"
+        Copy, through="copies.Book_loans", related_name="users"
     )
 
     def __str__(self):
