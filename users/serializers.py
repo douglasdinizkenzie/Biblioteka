@@ -42,7 +42,17 @@ class BookLoanSerializer(serializers.ModelSerializer):
         read_only_fields = ["started_at", "finished_at", "status"]
     
     def create(self, validated_data):
-        validated_data["finished_at"] = datetime.now() + timedelta(days=7)
+        returned_date = datetime.now() + timedelta(days=7)
+        check_weekend = returned_date.date().weekday()
+
+        if check_weekend == 5:
+            returned_date += timedelta(days=2)
+
+        if check_weekend == 6:
+            returned_date += timedelta(days=1)
+        
+        validated_data["finished_at"] = returned_date
+
         return Book_loans.objects.create(**validated_data)
 
 

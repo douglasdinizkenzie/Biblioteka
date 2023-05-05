@@ -2,7 +2,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.shortcuts import render
 from rest_framework import generics
 from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError 
 from books.models import Book
 from .serializers import CopiesSerializer
 from .models import Copy
