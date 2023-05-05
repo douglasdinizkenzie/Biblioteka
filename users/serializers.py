@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import User
+from copies.models import Book_loans
+from datetime import datetime, timedelta
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,6 +33,18 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
         ]
 
+class BookLoanSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Book_loans
+        fields = ["id", "started_at", "finished_at", "status", "user", "copy"]
+        read_only_fields = ["started_at", "finished_at", "status"]
+    
+    def create(self, validated_data):
+        validated_data["finished_at"] = datetime.now() + timedelta(days=7)
+        return Book_loans.objects.create(**validated_data)
+
 
 class UserDetailSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -47,6 +61,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     is_superuser = serializers.BooleanField(read_only=True)
+
+    #loans = BookLoanSerializer(many=True, read_only=True)
 
     def update(self, instance: User, validated_data: dict) -> User:
         for key, value in validated_data.items():
@@ -72,3 +88,4 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "password",
             "loans",
         ]
+        depth = 2
