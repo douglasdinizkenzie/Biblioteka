@@ -44,7 +44,7 @@ class BookLoanSerializer(serializers.ModelSerializer):
         read_only_fields = ["started_at", "finished_at", "status"]
 
     def create(self, validated_data):
-        returned_date = datetime.now() 
+        returned_date = datetime.now() + timedelta(days=7)
         check_weekend = returned_date.date().weekday()
 
         if check_weekend == 5:
@@ -95,6 +95,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "last_name",
             "is_superuser",
             "is_blocked",
+            "blocked_until",
             "is_student",
             "email",
             "password",
