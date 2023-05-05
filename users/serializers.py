@@ -3,6 +3,7 @@ from rest_framework.validators import UniqueValidator
 from .models import User
 from copies.models import Book_loans
 from datetime import datetime, timedelta
+from django.shortcuts import get_object_or_404
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,6 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
         ]
 
+
 class BookLoanSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
@@ -40,7 +42,7 @@ class BookLoanSerializer(serializers.ModelSerializer):
         model = Book_loans
         fields = ["id", "started_at", "finished_at", "status", "user", "copy"]
         read_only_fields = ["started_at", "finished_at", "status"]
-    
+
     def create(self, validated_data):
         returned_date = datetime.now() + timedelta(days=7)
         check_weekend = returned_date.date().weekday()
@@ -50,10 +52,11 @@ class BookLoanSerializer(serializers.ModelSerializer):
 
         if check_weekend == 6:
             returned_date += timedelta(days=1)
-        
+
         validated_data["finished_at"] = returned_date
 
         return Book_loans.objects.create(**validated_data)
+
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -72,7 +75,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     is_superuser = serializers.BooleanField(read_only=True)
 
-    #loans = BookLoanSerializer(many=True, read_only=True)
 
     def update(self, instance: User, validated_data: dict) -> User:
         for key, value in validated_data.items():
@@ -93,6 +95,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "last_name",
             "is_superuser",
             "is_blocked",
+            "blocked_until",
             "is_student",
             "email",
             "password",
