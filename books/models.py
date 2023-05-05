@@ -14,11 +14,9 @@ class Book(models.Model):
     title = models.CharField(max_length=120)
     sinopse = models.CharField(max_length=120)
     author = models.CharField(max_length=120)
-    year = models.DateTimeField(auto_now_add=True)
+    year = models.DateTimeField()
 
-    user = models.ManyToManyField(
-        User, through=Followings, related_name="books"
-    )
+    user = models.ManyToManyField(User, through=Followings, related_name="books")
 
     def __str__(self) -> str:
         return f"<Book {self.id} = {self.title}]>"
