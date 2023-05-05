@@ -18,6 +18,7 @@ class BookView(ListCreateAPIView):
 
 class BookDetailView(RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
+    permission_classes = [CollaboratorCreateBook]
 
     queryset = Book.objects.all()
     serializer_class = BookSerializer
