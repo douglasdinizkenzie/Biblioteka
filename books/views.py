@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from users.permissions import IsAccountOwner
+from rest_framework.response import Response
 
 
 class RetrieveDestroyCreateAPIView(
@@ -46,10 +47,19 @@ class FollowingView(RetrieveDestroyCreateAPIView):
     def perform_create(self, serializer):
         book_id = get_object_or_404(Book, pk=self.kwargs["pk"])
         user_id = self.request.user
-        
-        follow = self.queryset.filter(book=book_id.id,user=user_id.id)
+
+        follow = self.queryset.filter(book=book_id.id, user=user_id.id)
 
         if follow:
             raise ValidationError("You already follow this book!")
 
         return serializer.save(book=book_id, user=user_id)
+
+    def destroy(self, request, *args, **kwargs):
+        book_id = get_object_or_404(Book, pk=self.kwargs["pk"])
+        user_id = self.request.user
+
+        follow = self.queryset.filter(book=book_id.id, user=user_id.id)
+        follow.delete()
+
+        return Response({"message": "Book has been unfollow"})
