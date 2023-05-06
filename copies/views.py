@@ -13,9 +13,6 @@ from users.models import User
 from datetime import datetime, timedelta
 
 
-# Create your views here.
-
-
 class RetrieveUpdateDestroyCreateAPIView(
     generics.CreateAPIView,
     generics.RetrieveAPIView,
@@ -68,7 +65,7 @@ class BookLoanView(RetrieveUpdateDestroyCreateAPIView):
     def perform_update(self, serializer):
         loan = get_object_or_404(Book_loans, pk=self.kwargs["pk"])
         copy = get_object_or_404(Copy, pk=self.request.data["copy"])
-        user = get_object_or_404(User,pk=self.kwargs["pk"])
+        user = get_object_or_404(User, pk=self.kwargs["pk"])
 
         day_time = datetime.now().timestamp()
         finish_date = loan.finished_at.timestamp()
