@@ -1,6 +1,7 @@
 from rest_framework import serializers
-
+from .models import Followings
 from .models import Book
+from users.serializers import UserSerializer
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -17,5 +18,15 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ["id", "title", "sinopse", "author", "year", "copies"]
+        fields = ["id", "title", "sinopse", "author", "year", "copies", "followings"]
         extra_kwargs = {"copies": {"read_only": True}}
+        depth = 1
+
+
+class FollowingSerializer(serializers.ModelSerializer):
+    book = BookSerializer(read_only=True)
+    users = UserSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Followings
+        fields = ["book", "users"]

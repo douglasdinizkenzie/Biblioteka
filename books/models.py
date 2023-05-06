@@ -3,11 +3,13 @@ from users.models import User
 
 
 class Followings(models.Model):
-    book = models.ForeignKey("books.Book", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(
+        "books.Book", on_delete=models.CASCADE, related_name="followings"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followings")
 
     def __str__(self) -> str:
-        return f"<following {self.id} = {self.books}]>"
+        return f"<following {self.id} = {self.book}]>"
 
 
 class Book(models.Model):
