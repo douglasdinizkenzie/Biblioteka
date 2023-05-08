@@ -35,6 +35,9 @@ ALLOWED_HOSTS = []
 
 RAILWAI_STATIC_URL = os.getenv("RAILWAY_STATIC_URL")
 
+if RAILWAI_STATIC_URL:
+    ALLOWED_HOSTS += [RAILWAI_STATIC_URL, "0.0.0.0"]
+
 # Application definition
 
 DJANGO_APPS = [
@@ -103,7 +106,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
     db_from_env = dj_database_url.config(
-        default=DATABASE_URL,conn_max_age=500,ssl_require=True
+        default=DATABASE_URL, conn_max_age=500, ssl_require=True
     )
     DATABASES["default"].update(db_from_env)
     DEBUG = False
