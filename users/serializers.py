@@ -3,8 +3,6 @@ from rest_framework.validators import UniqueValidator
 from .models import User
 from copies.models import Book_loans
 from datetime import datetime, timedelta
-from django.shortcuts import get_object_or_404
-
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -42,6 +40,7 @@ class BookLoanSerializer(serializers.ModelSerializer):
         model = Book_loans
         fields = ["id", "started_at", "finished_at", "status", "user", "copy"]
         read_only_fields = ["started_at", "finished_at", "status"]
+        depth = 2
 
     def create(self, validated_data):
         returned_date = datetime.now() + timedelta(days=7)
@@ -56,8 +55,6 @@ class BookLoanSerializer(serializers.ModelSerializer):
         validated_data["finished_at"] = returned_date
 
         return Book_loans.objects.create(**validated_data)
-
-
 
 class UserDetailSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
