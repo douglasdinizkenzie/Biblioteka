@@ -72,6 +72,7 @@ class BookLoanDetailView(generics.ListCreateAPIView):
     serializer_class = BookLoanSerializer
 
     lookup_url_kwarg = "user_id"
+    
 
     def perform_create(self, serializer):
         user_id = get_object_or_404(User, pk=self.kwargs["user_id"])
