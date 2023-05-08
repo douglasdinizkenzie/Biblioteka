@@ -55,6 +55,9 @@ class BookLoanSerializer(serializers.ModelSerializer):
         validated_data["finished_at"] = returned_date
 
         return Book_loans.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
 
 class UserDetailSerializer(serializers.ModelSerializer):
     username = serializers.CharField(

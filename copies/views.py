@@ -63,7 +63,9 @@ class BookLoanView(RetrieveUpdateDestroyCreateAPIView):
         copy.is_available = True
         copy.save()
 
-        return loan
+        
+
+        
 
 class BookLoanDetailView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
