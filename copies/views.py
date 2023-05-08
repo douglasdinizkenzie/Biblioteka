@@ -41,9 +41,42 @@ class BookLoanView(RetrieveUpdateDestroyCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdm]
 
+    lookup_url_kwarg = "user_id" and "loan_id"
+
+    def perform_update(self, serializer):
+        loan = get_object_or_404(Book_loans, id=self.kwargs["loan_id"])
+        copy = Copy.objects.get(id=loan.copy.id)
+        user = get_object_or_404(User, id=self.kwargs["user_id"])
+
+        day_time = datetime.now().timestamp()
+        finish_date = loan.finished_at.timestamp()
+        result = day_time - finish_date
+        loan.status = "Returned"
+        loan.save()
+        if result > 0:
+            user.is_blocked = True
+            user.blocked_until = datetime.now() + timedelta(days=7)
+            loan.status = "Delayed"
+            user.save()
+            loan.save()
+
+        copy.is_available = True
+        copy.save()
+
+        return loan
+
+class BookLoanDetailView(generics.ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdm]
+
+    serializer_class = BookLoanSerializer
+
+    lookup_url_kwarg = "user_id"
+
     def perform_create(self, serializer):
-        user_id = get_object_or_404(User, pk=self.kwargs["pk"])
+        user_id = get_object_or_404(User, pk=self.kwargs["user_id"])
         copy = get_object_or_404(Copy, pk=self.request.data["copy"])
+
         if user_id.is_blocked == True:
             if user_id.blocked_until.timestamp() > datetime.now().timestamp():
                 raise ValidationError(
@@ -60,24 +93,11 @@ class BookLoanView(RetrieveUpdateDestroyCreateAPIView):
         copy.last_loan = datetime.now()
         copy.save()
 
-        return serializer.save(user=user_id)
+        return serializer.save(user=user_id, copy=copy)
 
-    def perform_update(self, serializer):
-        loan = get_object_or_404(Book_loans, pk=self.kwargs["pk"])
-        copy = get_object_or_404(Copy, pk=self.request.data["copy"])
-        user = get_object_or_404(User, pk=self.kwargs["pk"])
-
-        day_time = datetime.now().timestamp()
-        finish_date = loan.finished_at.timestamp()
-        result = day_time - finish_date
-        loan.status = "Returned"
-        loan.save()
-        if result > 0:
-            user.is_blocked = True
-            user.blocked_until = datetime.now() + timedelta(days=7)
-            loan.status = "Delayed"
-            user.save()
-            loan.save()
-
-        copy.is_available = True
-        copy.save()
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.kwargs.get("user_id"))
+        loans = Book_loans.objects.filter(user=user)
+        print(loans)
+        return Book_loans.objects.filter(user=user)
+    
