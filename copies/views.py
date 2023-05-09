@@ -51,21 +51,23 @@ class BookLoanView(RetrieveUpdateDestroyCreateAPIView):
         day_time = datetime.now().timestamp()
         finish_date = loan.finished_at.timestamp()
         result = day_time - finish_date
-        loan.status = "Returned"
-        loan.save()
+
+        if loan.user.id != user.id:
+            raise ValidationError("This loan is not from this user!")
+        
         if result > 0:
             user.is_blocked = True
             user.blocked_until = datetime.now() + timedelta(days=7)
-            loan.status = "Delayed"
+            
             user.save()
-            loan.save()
+
+            return serializer.save(status="Delayed")
 
         copy.is_available = True
         copy.save()
-
         
-
-        
+        return serializer.save(status="Returned")
+   
 
 class BookLoanDetailView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
